@@ -19,7 +19,7 @@ class User(Base):
         nullable=False,
     )
 
-    profile: Mapped[Optional["Profile"]] = relationship(back_populates="user")
+    profile: Mapped[Optional["Profile"]] = relationship(back_populates="user", uselist=False)
     posts: Mapped[list["Post"]] = relationship(back_populates="author")
     comments: Mapped[list["Comment"]] = relationship(back_populates="author")
 
