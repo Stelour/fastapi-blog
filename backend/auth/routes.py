@@ -15,6 +15,7 @@ from backend.models import User, Profile
 from backend.schemas import Token, UserSchema, RegisterRequest, RegisterResponse
 
 from sqlalchemy import select, or_
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -45,7 +46,7 @@ def get_password_hash(password):
     return password_hash.hash(password)
 
 async def get_user_by_username(db: AsyncSession, username: str):
-    result = await db.execute(select(User).where(User.username == username))
+    result = await db.execute(select(User).options(selectinload(User.profile)).where(User.username == username))
     return result.scalar_one_or_none()
 
 
@@ -92,6 +93,11 @@ async def get_current_user(
     user = await get_user_by_username(db, username)
     if user is None:
         raise credentials_exception
+
+    if user.profile is not None:
+        user.profile.last_seen = datetime.now(timezone.utc)
+        await db.commit()
+
     return user
 
 
@@ -134,6 +140,8 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
 
     new_user.profile = Profile()
     db.add(new_user)
+    await db.flush()
+    new_user.profile.public_id = f"id_{new_user.id}"
     await db.commit()
     await db.refresh(new_user)
 
