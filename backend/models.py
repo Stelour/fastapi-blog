@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, String, Text, func, SmallInteger, UniqueConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.db import Base
@@ -20,8 +20,6 @@ class User(Base):
     )
 
     profile: Mapped[Optional["Profile"]] = relationship(back_populates="user", uselist=False)
-    posts: Mapped[list["Post"]] = relationship(back_populates="author")
-    comments: Mapped[list["Comment"]] = relationship(back_populates="author")
 
 
 class Profile(Base):
@@ -73,8 +71,9 @@ class Post(Base):
         nullable=False,
     )
 
-    author: Mapped["User"] = relationship(back_populates="posts")
+    author: Mapped["User"] = relationship()
     comments: Mapped[list["Comment"]] = relationship(back_populates="post")
+    reactions: Mapped[list["PostReaction"]] = relationship(back_populates="post")
 
 
 class Comment(Base):
@@ -99,5 +98,36 @@ class Comment(Base):
         index=True,
     )
 
-    author: Mapped["User"] = relationship(back_populates="comments")
+    author: Mapped["User"] = relationship()
     post: Mapped["Post"] = relationship(back_populates="comments")
+    reactions: Mapped[list["CommentReaction"]] = relationship(back_populates="comment")
+
+
+class PostReaction(Base):
+    __tablename__ = "post_reactions"
+    __table_args__ = (
+        UniqueConstraint("user_id", "post_id", name="reaction_user_post"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"), nullable=False)
+    value: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+
+    user: Mapped["User"] = relationship()
+    post: Mapped["Post"] = relationship(back_populates="reactions")
+
+
+class CommentReaction(Base):
+    __tablename__ = "comment_reactions"
+    __table_args__ = (
+        UniqueConstraint("user_id", "comment_id", name="reaction_user_comment"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    comment_id: Mapped[int] = mapped_column(ForeignKey("comments.id", ondelete="CASCADE"), nullable=False)
+    value: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+
+    user: Mapped["User"] = relationship()
+    comment: Mapped["Comment"] = relationship(back_populates="reactions")

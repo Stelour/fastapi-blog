@@ -14,7 +14,6 @@ sys.path.append(os.getcwd())
 load_dotenv()
 
 from backend.db import Base
-from backend.models import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
