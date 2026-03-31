@@ -33,7 +33,7 @@ def validate_public_id(public_id: str):
     return public_id
 
 
-@router.get("/{public_id}", response_model=ProfileInfoResponse)
+@router.get("/user/{public_id}", response_model=ProfileInfoResponse)
 async def get_profile(public_id: str, db: AsyncSession = Depends(get_db)):
     query = (
         select(Profile)
@@ -55,7 +55,7 @@ async def get_profile(public_id: str, db: AsyncSession = Depends(get_db)):
         public_id=profile.public_id,
     )
 
-@router.patch("/{public_id}/edit", response_model=ProfileInfoResponse)
+@router.patch("/user/{public_id}/edit", response_model=ProfileInfoResponse)
 async def edit_profile(
     public_id: str,
     db: AsyncSession = Depends(get_db),

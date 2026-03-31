@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 from backend.auth.routes import get_current_user
 from backend.db import get_db
 from backend.models import User, Profile, Post, PostReaction, Comment, CommentReaction
+from backend.search import query_index, add_to_index, remove_from_index
 from backend.schemas import (
     DeletePostResponse,
     PostCreateRequest,
@@ -136,6 +137,8 @@ async def create_post(
     await db.commit()
     await db.refresh(new_post)
 
+    await add_to_index("posts", new_post)
+
     return PostResponsePP(
         id=new_post.id,
         title=new_post.title,
@@ -167,6 +170,8 @@ async def delete_post(
 
     await db.delete(post)
     await db.commit()
+
+    await remove_from_index("posts", post)
 
     return {"detail": "Post deleted"}
 
@@ -208,6 +213,8 @@ async def update_post(
 
     await db.commit()
     await db.refresh(post)
+
+    await add_to_index("posts", post)
 
     return PostResponsePP(
         id=post.id,
@@ -432,3 +439,31 @@ async def react_comment(
 
     await db.commit()
     return {"detail": "Reaction updated"}
+
+
+@router.get("/search", response_model=list[PostResponse])
+async def search_posts(q: str, db: AsyncSession = Depends(get_db)):
+    query = q.strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="Search query cannot be empty")
+
+    ids = await query_index("posts", query)
+    if not ids:
+        return []
+
+    reaction_counts = f_reaction_counts()
+    when = [(post_id, pos) for pos, post_id in enumerate(ids)]
+
+    result = await db.execute(
+        select(Post, reaction_counts.c.likes_count, reaction_counts.c.dislikes_count)
+        .options(selectinload(Post.author))
+        .outerjoin(reaction_counts, reaction_counts.c.post_id == Post.id)
+        .where(Post.id.in_(ids))
+        .order_by(case(*when, value=Post.id))
+    )
+    rows = result.all()
+
+    return [
+        resp_return(post, likes_count, dislikes_count)
+        for post, likes_count, dislikes_count in rows
+    ]
