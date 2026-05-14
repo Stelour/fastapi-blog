@@ -1,0 +1,139 @@
+.header {
+    width: 100%;
+
+    padding:
+            30px
+            40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: white;
+    margin-right: 80px;
+
+    font-family: Roboto, sans-serif;
+    font-size: 50px;
+    font-weight: 200;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+}
+
+.search {
+    width: 100%;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+
+    border: 1.5px solid #97B0EE;
+
+    border-radius: 50px;
+
+    overflow: hidden;
+
+    background: rgba(144, 129, 208, 0.35);
+
+    backdrop-filter: blur(10px);
+
+    hr {
+        width: 1px;
+        height: 100%;
+        color: #97B0EE;
+    }
+}
+
+.search-icon {
+    height: 25px;
+    width: 25px;
+    margin-left: 20px;
+    margin-right: 15px;
+
+    display: flex;
+    justify-content: center;
+}
+
+.search input {
+    flex: 1;
+
+    height: 100%;
+
+    margin-left: 15px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #97B0EE;
+
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.search input::placeholder {
+    color: #97B0EE;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-left: 80px;
+
+    gap: 10px;
+}
+
+.header-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    padding: 15px;
+
+    border: none;
+
+    color: rgba(216, 174, 251, 0.7);
+
+    img {
+        opacity: 70%;
+    }
+
+    font-family: Space Mono, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+
+    cursor: pointer;
+}
+
+.header-btn:hover {
+    color: rgba(216, 174, 251, 1);
+
+    img {
+        opacity: 100%;
+    }
+}
+
+.avatar {
+    img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+    }
+
+
+    border-radius: 50%;
+
+    background: #e7d5ff;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 34px;
+}

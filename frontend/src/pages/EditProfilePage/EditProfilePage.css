@@ -1,0 +1,54 @@
+.edit-profile-card {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding: 80px;
+    align-items: center;
+
+    max-width: 850px;
+
+    margin: 60px auto 0;
+
+    border:
+            2px solid rgba(176, 91, 250, 0.25);
+
+    border-radius: 60px;
+
+    overflow: hidden;
+
+    backdrop-filter: blur(10px);
+
+    .submit-btn {
+        font-size: 36px;
+        padding: 17px 80px;
+    }
+}
+
+.edit-profile-image {
+    width: 225px;
+    height: 225px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 80px;
+    width: 100%;
+
+    h1 {
+        color: #D9AFE6;
+        text-align: center;
+        font-size: 64px;
+    }
+
+    .input-group {
+        gap: 90px;
+
+
+        input {
+            font-size: 36px;
+        }
+    }
+}
+

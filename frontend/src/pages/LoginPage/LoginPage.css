@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #08070d;
+}
+
+.login-page {
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+    overflow: hidden;
+
+    background:
+            radial-gradient(circle at center,
+            rgba(120, 70, 180, 0.18),
+            transparent 25%),
+            #08070d;
+}
+
+.glow {
+    position: absolute;
+
+    width: 400px;
+    height: 400px;
+
+    background: rgba(145, 92, 255, 0.15);
+
+    filter: blur(120px);
+
+    z-index: 0;
+}
+
+.blog-title {
+    color: white;
+
+    font-family: "Roboto", sans-serif;
+    font-size: 50px;
+    font-weight: 200;
+    letter-spacing: 0.15px;
+    line-height: 24px;
+
+    margin-bottom: 80px;
+
+    z-index: 1;
+}
+
+.login-card {
+    padding:
+            120px
+            20px
+            20px;
+
+    border-radius: 40px;
+
+    position: relative;
+    z-index: 1;
+
+    background: rgba(201, 183, 233, 0.1);
+
+    border: 1px solid rgba(176, 201, 238, 1);
+
+    backdrop-filter: blur(50px);
+}
+
+.avatar-login {
+    position: absolute;
+
+    border-radius: 50%;
+
+    top: -25px;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+.avatar img {
+    width: 100px;
+    height: 100px;
+}
+
+.login-title {
+    text-align: center;
+
+    color: #D9AFE6;
+
+    font-family: Roboto, sans-serif;
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    align-items: center;
+}
+
+.bottom {
+    margin-top: 10px;
+    color: #B3B3B3;
+}
+
+.bottom-link {
+    margin-left: 3px;
+    color: #D9AFE6;
+}
+
