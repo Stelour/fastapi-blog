@@ -1,9 +1,21 @@
+import { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import './Header.css'
 import searchIcon from '../../assets/icons/search.svg'
 import plusIcon from '../../assets/icons/plus.svg'
 import userIcon from '../../assets/icons/user.svg'
 
 function Header() {
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '')
+
+    const handleSearchSubmit = (event) => {
+        event.preventDefault()
+
+        const query = searchQuery.trim()
+        navigate(query ? `/?q=${encodeURIComponent(query)}` : '/')
+    }
 
     return (
         <header className="header">
@@ -12,20 +24,22 @@ function Header() {
                 BLOG
             </h1>
 
-            <div className="search">
+            <form className="search" onSubmit={handleSearchSubmit}>
 
-                <div className="search-icon">
+                <button className="search-icon" type="submit">
                   <img src={searchIcon} alt=""/>
-                </div>
+                </button>
 
                 <hr/>
 
                 <input
                     type="text"
                     placeholder="Search posts..."
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
                 />
 
-            </div>
+            </form>
 
             <div className="header-right">
 

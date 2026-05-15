@@ -4,6 +4,9 @@ const authorProfileCache = new Map()
 async function request(path, options = {}) {
     const { auth = false, ...fetchOptions } = options
     const token = auth ? getStoredToken() : null
+    const isFormData = fetchOptions.body instanceof FormData
+    const isUrlEncoded = fetchOptions.body instanceof URLSearchParams
+    const isJsonBody = fetchOptions.body !== undefined && !isFormData && !isUrlEncoded
 
     if (auth && !token) {
         throw new Error('Log in to continue.')
@@ -12,7 +15,9 @@ async function request(path, options = {}) {
     const response = await fetch(`${API_BASE_URL}${path}`, {
         ...fetchOptions,
         headers: {
-            ...(fetchOptions.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+            ...(isFormData ? {} : {}),
+            ...(isUrlEncoded ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
+            ...(isJsonBody ? { 'Content-Type': 'application/json' } : {}),
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...fetchOptions.headers,
         },
@@ -42,6 +47,10 @@ export function getStoredToken() {
     return localStorage.getItem('access_token') ?? localStorage.getItem('token')
 }
 
+export function saveToken(token) {
+    localStorage.setItem('access_token', token)
+}
+
 export function getFileUrl(path) {
     if (!path) {
         return ''
@@ -56,6 +65,10 @@ export function getFileUrl(path) {
 
 export function getPosts() {
     return request('/posts/')
+}
+
+export function searchPosts(query) {
+    return request(`/posts/search?q=${encodeURIComponent(query)}`)
 }
 
 export async function getPost(postId) {
@@ -102,8 +115,32 @@ export function searchProfiles(query) {
     return request(`/profiles/search?q=${encodeURIComponent(query)}`)
 }
 
+export function loginUser(login, password) {
+    const body = new URLSearchParams()
+    body.set('username', login)
+    body.set('password', password)
+
+    return request('/auth/login', {
+        method: 'POST',
+        body,
+    })
+}
+
+export function registerUser({ email, username, password }) {
+    return request('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ email, username, password }),
+    })
+}
+
 export async function getPostsWithCommentCounts() {
     const posts = await getPosts()
+
+    return enrichAuthors(await addCommentCounts(posts))
+}
+
+export async function searchPostsWithCommentCounts(query) {
+    const posts = await searchPosts(query)
 
     return enrichAuthors(await addCommentCounts(posts))
 }

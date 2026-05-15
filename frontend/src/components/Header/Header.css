@@ -53,6 +53,10 @@
 
     display: flex;
     justify-content: center;
+
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }
 
 .search input {

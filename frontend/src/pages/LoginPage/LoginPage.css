@@ -119,3 +119,20 @@ body {
     color: #D9AFE6;
 }
 
+.auth-message {
+    max-width: 280px;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth-message-error {
+    color: #ff9fb2;
+}
+
+.submit-btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+    transform: none;
+}
+
