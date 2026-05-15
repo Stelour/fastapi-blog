@@ -1,12 +1,18 @@
+import { Link } from 'react-router-dom'
 import './PostCardFull.css'
 import userIcon from '../../assets/icons/user.svg'
 import likeIcon from '../../assets/icons/thumb-up.svg'
 import dislikeIcon from '../../assets/icons/thumb-down.svg'
+import { getFileUrl } from '../../api/client'
+import { formatDateTime } from '../../utils/format'
 
-function PostCardFull() {
+function PostCardFull({ post, commentsCount, onReact, isReacting }) {
+    const authorPublicId = post.author_public_id ?? `id_${post.author_id}`
+    const profilePath = `/profile/${authorPublicId}`
+    const avatarSrc = post.author_avatar_path ? getFileUrl(post.author_avatar_path) : userIcon
 
     return (
-        <article className="post-card">
+        <article className="post-card post-card-full">
 
             <div className="post-top">
 
@@ -16,15 +22,24 @@ function PostCardFull() {
 
                         <div className="user-info">
 
-                            <img src={userIcon} alt=""/>
+                            <Link className="user-link" to={profilePath}>
+                                <img
+                                    src={avatarSrc}
+                                    alt=""
+                                    onError={(event) => {
+                                        event.currentTarget.onerror = null
+                                        event.currentTarget.src = userIcon
+                                    }}
+                                />
+                            </Link>
 
-                            <span className="username">
-                            Username
-                        </span>
+                            <Link className="username user-link" to={profilePath}>
+                                {post.author_username}
+                            </Link>
 
                             <span className="time">
-                            5 hr ago
-                        </span>
+                                {formatDateTime(post.timestamp)}
+                            </span>
 
                         </div>
 
@@ -33,17 +48,20 @@ function PostCardFull() {
                     </div>
 
                     <h2 className="post-title">
-                        Title title title title...
+                        {post.title}
                     </h2>
 
                 </div>
 
                 <div className="tags">
 
-                    <span className="tag">Shopping</span>
-                    <span className="tag">Shopping</span>
-                    <span className="tag">Shopping</span>
-                    <span className="tag">Shopping</span>
+                    {post.categories.length > 0 ? (
+                        post.categories.map((category, index) => (
+                            <span className="tag" key={`${category}-${index}`}>{category}</span>
+                        ))
+                    ) : (
+                        <span className="tag">general</span>
+                    )}
 
                 </div>
 
@@ -52,30 +70,42 @@ function PostCardFull() {
             <div className="post-bottom">
 
                 <p className="post-body">
-                    Body body body body body body body body body body
-                    body body body body body body body body body body
-                    body body body body body body body body body...
+                    {post.body}
                 </p>
 
             </div>
 
             <div className="stats">
 
-                <button className="stat-button like">
+                <button
+                    className="stat-button like"
+                    type="button"
+                    disabled={isReacting}
+                    onClick={() => onReact(1)}
+                >
 
                     <img src={likeIcon} alt=""/>
 
-                    67
+                    {post.likes_count}
 
                 </button>
 
-                <button className="stat-button dislike">
+                <button
+                    className="stat-button dislike"
+                    type="button"
+                    disabled={isReacting}
+                    onClick={() => onReact(-1)}
+                >
 
                     <img src={dislikeIcon} alt=""/>
 
-                    67
+                    {post.dislikes_count}
 
                 </button>
+
+                <div className="stat-count">
+                    {commentsCount} comments
+                </div>
 
             </div>
 

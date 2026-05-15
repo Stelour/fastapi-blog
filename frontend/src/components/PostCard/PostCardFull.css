@@ -1,4 +1,4 @@
-.post-card {
+.post-card-full {
     padding: 15px 40px 30px 40px;
     width: 100%;
     display: flex;
@@ -6,19 +6,19 @@
     gap: 30px;
 }
 
-.post-top {
+.post-card-full .post-top {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.post-top-left {
+.post-card-full .post-top-left {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.user-info {
+.post-card-full .user-info {
     display: flex;
     align-items: center;
 
@@ -31,31 +31,53 @@
     }
 }
 
-.username {
+.post-card-full .username {
     color: white;
     font-size: 16px;
     font-weight: 600;
 }
 
-.time {
+.post-card-full .user-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.post-card-full .user-link:hover {
+    color: #d8aefb;
+}
+
+.post-card-full .username.user-link {
+    color: white;
+}
+
+.post-card-full .username.user-link:hover {
+    color: #d8aefb;
+}
+
+.post-card-full .user-link img {
+    display: block;
+}
+
+.post-card-full .time {
     color: #DDDDDD;
     font-weight: 400;
     font-size: 12px;
 }
 
-.post-title {
+.post-card-full .post-title {
     color: white;
     font-size: 60px;
+    overflow-wrap: anywhere;
 }
 
-.tags {
+.post-card-full .tags {
     display: flex;
     gap: 20px;
     align-self: start;
     width: fit-content;
 }
 
-.tag {
+.post-card-full .tag {
     padding:
             3px
             8px;
@@ -71,18 +93,20 @@
     font-size: 20px;
 }
 
-.post-body {
+.post-card-full .post-body {
     color: white;
     font-size: 20px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
-.stats {
+.post-card-full .stats {
     display: flex;
     gap: 15px;
 
 }
 
-.stat-button {
+.post-card-full .stat-button {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -97,26 +121,39 @@
 
     color: grey;
     font-size: 20px;
+    cursor: pointer;
 }
 
-.like:hover {
+.post-card-full .stat-button:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.post-card-full .stat-count {
+    display: flex;
+    align-items: center;
+    color: grey;
+    font-size: 20px;
+}
+
+.post-card-full .like:hover {
     img {
         filter: invert(68%) sepia(37%) saturate(576%) hue-rotate(190deg) brightness(99%) contrast(89%);
     }
 }
 
-.dislike:hover {
+.post-card-full .dislike:hover {
     img {
         filter: invert(66%) sepia(73%) saturate(389%) hue-rotate(304deg) brightness(101%) contrast(87%);
     }
 }
 
-.post-top-group {
+.post-card-full .post-top-group {
     display: flex;
     justify-content: space-between;
 }
 
-.post-top-button {
+.post-card-full .post-top-button {
     background: transparent;
     border: none;
     color: #9EBDFF;

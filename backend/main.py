@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from backend.posts.routes import router as posts_router
 from backend.auth.routes import router as auth_router
 from backend.profile.routes import router as profile_router
@@ -21,6 +22,7 @@ def create_app():
     blog_app.include_router(auth_router, prefix="/auth")
     blog_app.include_router(profile_router, prefix="/profiles")
     blog_app.include_router(posts_router, prefix="/posts")
+    blog_app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
     return blog_app
 

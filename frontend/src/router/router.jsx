@@ -31,12 +31,22 @@ export const router = createBrowserRouter([
     },
 
     {
+        path: '/profile/:publicId',
+        element: <ProfilePage />,
+    },
+
+    {
         path: '/profile/edit',
         element: <EditProfilePage />
     },
 
     {
         path: '/post',
+        element: <PostPage />
+    },
+
+    {
+        path: '/post/:postId',
         element: <PostPage />
     }
 ])

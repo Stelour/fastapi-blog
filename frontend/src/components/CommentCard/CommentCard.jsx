@@ -1,9 +1,15 @@
+import { Link } from 'react-router-dom'
 import './CommentCard.css'
 import userIcon from '../../assets/icons/user.svg'
 import likeIcon from '../../assets/icons/thumb-up.svg'
 import dislikeIcon from '../../assets/icons/thumb-down.svg'
+import { getFileUrl } from '../../api/client'
+import { formatDateTime } from '../../utils/format'
 
-function CommentCard() {
+function CommentCard({ comment, onReact, isReacting }) {
+    const authorPublicId = comment.author_public_id ?? `id_${comment.author_id}`
+    const profilePath = `/profile/${authorPublicId}`
+    const avatarSrc = comment.author_avatar_path ? getFileUrl(comment.author_avatar_path) : userIcon
 
     return (
         <article className="comment-card">
@@ -14,14 +20,23 @@ function CommentCard() {
 
                     <div className="user-info">
 
-                        <img src={userIcon} alt=""/>
+                        <Link className="user-link" to={profilePath}>
+                            <img
+                                src={avatarSrc}
+                                alt=""
+                                onError={(event) => {
+                                    event.currentTarget.onerror = null
+                                    event.currentTarget.src = userIcon
+                                }}
+                            />
+                        </Link>
 
-                        <span className="username">
-                            Username
-                        </span>
+                        <Link className="username user-link" to={profilePath}>
+                            {comment.author_username}
+                        </Link>
 
                         <span className="time">
-                            5 hr ago
+                            {formatDateTime(comment.timestamp)}
                         </span>
 
                     </div>
@@ -33,27 +48,34 @@ function CommentCard() {
             </div>
 
             <p className="comment-body">
-                comment text dddddddddddddasdasdadads
-                comment
-                Comment
-                comment text
+                {comment.body}
             </p>
 
             <div className="comment-stats">
 
-                <button className="comment-stat-button like">
+                <button
+                    className="comment-stat-button like"
+                    type="button"
+                    disabled={isReacting}
+                    onClick={() => onReact(comment.id, 1)}
+                >
 
                     <img src={likeIcon} alt=""/>
 
-                    67
+                    {comment.likes_count}
 
                 </button>
 
-                <button className="comment-stat-button dislike">
+                <button
+                    className="comment-stat-button dislike"
+                    type="button"
+                    disabled={isReacting}
+                    onClick={() => onReact(comment.id, -1)}
+                >
 
                     <img src={dislikeIcon} alt=""/>
 
-                    67
+                    {comment.dislikes_count}
 
                 </button>
 

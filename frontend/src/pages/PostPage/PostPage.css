@@ -58,4 +58,24 @@
     border: none;
     border-radius: 5px;
     color: white;
+    cursor: pointer;
+}
+
+.comment-submit-btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.post-action-error,
+.comments-empty {
+    max-width: 800px;
+    width: 100%;
+    margin: 15px auto 0;
+    color: #ff9fb2;
+    font-size: 18px;
+}
+
+.comments-empty {
+    color: #DDDDDD;
+    text-align: center;
 }

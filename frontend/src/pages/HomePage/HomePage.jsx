@@ -1,7 +1,41 @@
+import { useEffect, useState } from 'react'
 import Header from '../../components/Header/Header'
 import PostCard from '../../components/PostCard/PostCard'
+import { getPostsWithCommentCounts } from '../../api/client'
 
 function HomePage() {
+    const [posts, setPosts] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState('')
+
+    useEffect(() => {
+        let isMounted = true
+
+        async function loadPosts() {
+            try {
+                const loadedPosts = await getPostsWithCommentCounts()
+
+                if (isMounted) {
+                    setPosts(loadedPosts)
+                    setError('')
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setError(err.message)
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false)
+                }
+            }
+        }
+
+        loadPosts()
+
+        return () => {
+            isMounted = false
+        }
+    }, [])
 
     return (
         <div className="home-page">
@@ -12,9 +46,27 @@ function HomePage() {
 
             <main className="posts-container">
 
-                <PostCard />
-                <PostCard />
-                <PostCard />
+                {isLoading && (
+                    <p className="feed-state">
+                        Loading posts...
+                    </p>
+                )}
+
+                {!isLoading && error && (
+                    <p className="feed-state feed-state-error">
+                        {error}
+                    </p>
+                )}
+
+                {!isLoading && !error && posts.length === 0 && (
+                    <p className="feed-state">
+                        No posts yet.
+                    </p>
+                )}
+
+                {!isLoading && !error && posts.map((post) => (
+                    <PostCard key={post.id} post={post} />
+                ))}
 
             </main>
 

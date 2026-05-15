@@ -1,13 +1,37 @@
+import { Link, useNavigate } from 'react-router-dom'
 import './PostCard.css'
 import userIcon from '../../assets/icons/user.svg'
 import likeIcon from '../../assets/icons/thumb-up.svg'
 import dislikeIcon from '../../assets/icons/thumb-down.svg'
 import commentIcon from '../../assets/icons/comment.svg'
+import { getFileUrl } from '../../api/client'
+import { formatDateTime, truncateText } from '../../utils/format'
 
-function PostCard() {
+function PostCard({ post }) {
+    const navigate = useNavigate()
+    const authorPublicId = post.author_public_id ?? `id_${post.author_id}`
+    const profilePath = `/profile/${authorPublicId}`
+    const avatarSrc = post.author_avatar_path ? getFileUrl(post.author_avatar_path) : userIcon
+
+    const openPost = () => {
+        navigate(`/post/${post.id}`)
+    }
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            openPost()
+        }
+    }
 
     return (
-        <article className="post-card">
+        <article
+            className="post-card post-card-clickable"
+            onClick={openPost}
+            onKeyDown={handleKeyDown}
+            role="link"
+            tabIndex={0}
+        >
 
             <div className="post-top">
 
@@ -15,30 +39,42 @@ function PostCard() {
 
                     <div className="user-info">
 
-                        <img src={userIcon} alt=""/>
+                        <Link className="user-link" to={profilePath} onClick={(event) => event.stopPropagation()}>
+                            <img
+                                src={avatarSrc}
+                                alt=""
+                                onError={(event) => {
+                                    event.currentTarget.onerror = null
+                                    event.currentTarget.src = userIcon
+                                }}
+                            />
+                        </Link>
 
-                        <span className="username">
-                            Username
-                        </span>
+                        <Link className="username user-link" to={profilePath} onClick={(event) => event.stopPropagation()}>
+                            {post.author_username}
+                        </Link>
 
                         <span className="time">
-                            5 hr ago
+                            {formatDateTime(post.timestamp)}
                         </span>
 
                     </div>
 
                     <h2 className="post-title">
-                        Title title title title...
+                        {post.title}
                     </h2>
 
                 </div>
 
                 <div className="tags">
 
-                    <span className="tag">Shopping</span>
-                    <span className="tag">Shopping</span>
-                    <span className="tag">Shopping</span>
-                    <span className="tag">Shopping</span>
+                    {post.categories.length > 0 ? (
+                        post.categories.slice(0, 4).map((category, index) => (
+                            <span className="tag" key={`${category}-${index}`}>{category}</span>
+                        ))
+                    ) : (
+                        <span className="tag">general</span>
+                    )}
 
                 </div>
 
@@ -47,9 +83,7 @@ function PostCard() {
             <div className="post-bottom">
 
                 <p className="post-body">
-                    Body body body body body body body body body body
-                    body body body body body body body body body body
-                    body body body body body body body body body...
+                    {truncateText(post.body, 220)}
                 </p>
 
             </div>
@@ -60,7 +94,7 @@ function PostCard() {
 
                     <img src={likeIcon} alt=""/>
 
-                    67
+                    {post.likes_count}
 
                 </div>
 
@@ -68,7 +102,7 @@ function PostCard() {
 
                     <img src={dislikeIcon} alt=""/>
 
-                    67
+                    {post.dislikes_count}
 
                 </div>
 
@@ -76,7 +110,7 @@ function PostCard() {
 
                     <img src={commentIcon} alt=""/>
 
-                    67
+                    {post.comments_count}
 
                 </div>
 
