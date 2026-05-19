@@ -1,0 +1,104 @@
+.create-post-page {
+    min-height: 100vh;
+}
+
+.create-post-card {
+    width: min(560px, calc(100% - 40px));
+    margin: 45px auto 60px;
+    padding: 48px 38px 42px;
+    border: 2px solid rgba(176, 91, 250, 0.25);
+    border-radius: 34px;
+    backdrop-filter: blur(10px);
+}
+
+.create-post-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+}
+
+.create-post-form h1 {
+    color: #D9AFE6;
+    font-size: 42px;
+    line-height: 1;
+}
+
+.create-title-input,
+.create-post-form textarea {
+    width: 100%;
+    border: 1.5px solid rgba(176, 91, 250, 0.9);
+    outline: none;
+    background: rgba(144, 129, 208, 0.25);
+    color: white;
+    font-size: 20px;
+}
+
+.create-title-input {
+    height: 54px;
+    padding: 0 18px;
+    border-radius: 16px;
+}
+
+.create-post-form textarea {
+    min-height: 220px;
+    resize: vertical;
+    padding: 16px 18px;
+    border-radius: 10px;
+    font-family: Roboto, sans-serif;
+}
+
+.create-title-input::placeholder,
+.create-post-form textarea::placeholder,
+.tags-editor input::placeholder {
+    color: #B3B3B3;
+}
+
+.tags-editor {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.tag-chip {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(90, 123, 150, 0.8);
+    color: #D9AFE6;
+    cursor: pointer;
+}
+
+.tags-editor input {
+    flex: 1;
+    min-width: 120px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: white;
+}
+
+.create-post-error {
+    color: #ff9fb2;
+    font-size: 15px;
+    text-align: center;
+}
+
+.create-post-submit {
+    min-width: 180px;
+    padding: 9px 28px;
+    border: none;
+    border-radius: 18px;
+    background: rgba(219, 181, 248, 60%);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.create-post-submit:disabled {
+    cursor: default;
+    opacity: 0.6;
+}

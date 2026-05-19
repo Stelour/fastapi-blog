@@ -148,6 +148,22 @@
     }
 }
 
+.post-card-full .active-like {
+    color: #8fb2ff;
+}
+
+.post-card-full .active-like img {
+    filter: invert(68%) sepia(37%) saturate(576%) hue-rotate(190deg) brightness(99%) contrast(89%);
+}
+
+.post-card-full .active-dislike {
+    color: #ff9fb2;
+}
+
+.post-card-full .active-dislike img {
+    filter: invert(66%) sepia(73%) saturate(389%) hue-rotate(304deg) brightness(101%) contrast(87%);
+}
+
 .post-card-full .post-top-group {
     display: flex;
     justify-content: space-between;
@@ -159,4 +175,41 @@
     color: #9EBDFF;
     font-size: 20px;
     font-weight: 900;
+    cursor: pointer;
+}
+
+.post-card-full .owner-actions {
+    position: relative;
+}
+
+.post-card-full .owner-menu {
+    position: absolute;
+    right: 0;
+    top: 28px;
+    display: none;
+    min-width: 110px;
+    padding: 6px;
+    border: 1px solid rgba(176, 91, 250, 0.45);
+    border-radius: 8px;
+    background: rgba(16, 13, 24, 0.96);
+    z-index: 2;
+}
+
+.post-card-full .owner-actions:hover .owner-menu,
+.post-card-full .owner-actions:focus-within .owner-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-card-full .owner-menu button {
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.post-card-full .owner-menu button:hover {
+    color: #d8aefb;
 }

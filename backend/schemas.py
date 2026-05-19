@@ -54,6 +54,7 @@ class PostResponse(BaseModel):
     author_username: str
     likes_count: int
     dislikes_count: int
+    my_reaction: int | None = None
 
 class DeletePostResponse(BaseModel):
     detail: str
@@ -96,6 +97,7 @@ class CommentResponse(BaseModel):
     author_username: str
     likes_count: int
     dislikes_count: int
+    my_reaction: int | None = None
 
 
 class ReactionRequest(BaseModel):

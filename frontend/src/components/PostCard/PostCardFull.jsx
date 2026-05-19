@@ -6,7 +6,16 @@ import dislikeIcon from '../../assets/icons/thumb-down.svg'
 import { getFileUrl } from '../../api/client'
 import { formatDateTime } from '../../utils/format'
 
-function PostCardFull({ post, commentsCount, onReact, isReacting }) {
+function PostCardFull({
+    post,
+    commentsCount,
+    onReact,
+    isReacting,
+    activeReaction,
+    canManage,
+    onEdit,
+    onDelete,
+}) {
     const authorPublicId = post.author_public_id ?? `id_${post.author_id}`
     const profilePath = `/profile/${authorPublicId}`
     const avatarSrc = post.author_avatar_path ? getFileUrl(post.author_avatar_path) : userIcon
@@ -43,7 +52,15 @@ function PostCardFull({ post, commentsCount, onReact, isReacting }) {
 
                         </div>
 
-                        <button className="post-top-button">...</button>
+                        {canManage && (
+                            <div className="owner-actions">
+                                <button className="post-top-button" type="button">...</button>
+                                <div className="owner-menu">
+                                    <button type="button" onClick={onEdit}>Edit</button>
+                                    <button type="button" onClick={onDelete}>Delete</button>
+                                </div>
+                            </div>
+                        )}
 
                     </div>
 
@@ -78,7 +95,7 @@ function PostCardFull({ post, commentsCount, onReact, isReacting }) {
             <div className="stats">
 
                 <button
-                    className="stat-button like"
+                    className={`stat-button like ${activeReaction === 1 ? 'active-like' : ''}`}
                     type="button"
                     disabled={isReacting}
                     onClick={() => onReact(1)}
@@ -91,7 +108,7 @@ function PostCardFull({ post, commentsCount, onReact, isReacting }) {
                 </button>
 
                 <button
-                    className="stat-button dislike"
+                    className={`stat-button dislike ${activeReaction === -1 ? 'active-dislike' : ''}`}
                     type="button"
                     disabled={isReacting}
                     onClick={() => onReact(-1)}

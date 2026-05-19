@@ -37,6 +37,7 @@ password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 
 
 def verify_password(plain_password, hashed_password):
@@ -93,6 +94,32 @@ async def get_current_user(
     user = await get_user_by_username(db, username)
     if user is None:
         raise credentials_exception
+
+    if user.profile is not None:
+        user.profile.last_seen = datetime.now(timezone.utc)
+        await db.commit()
+
+    return user
+
+
+async def get_optional_current_user(
+    token: Annotated[str | None, Depends(optional_oauth2_scheme)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    if token is None:
+        return None
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            return None
+    except InvalidTokenError:
+        return None
+
+    user = await get_user_by_username(db, username)
+    if user is None:
+        return None
 
     if user.profile is not None:
         user.profile.last_seen = datetime.now(timezone.utc)

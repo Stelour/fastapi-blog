@@ -2,8 +2,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000'
 const authorProfileCache = new Map()
 
 async function request(path, options = {}) {
-    const { auth = false, ...fetchOptions } = options
-    const token = auth ? getStoredToken() : null
+    const { auth = false, optionalAuth = false, ...fetchOptions } = options
+    const token = auth || optionalAuth ? getStoredToken() : null
     const isFormData = fetchOptions.body instanceof FormData
     const isUrlEncoded = fetchOptions.body instanceof URLSearchParams
     const isJsonBody = fetchOptions.body !== undefined && !isFormData && !isUrlEncoded
@@ -51,6 +51,11 @@ export function saveToken(token) {
     localStorage.setItem('access_token', token)
 }
 
+export function logoutUser() {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('token')
+}
+
 export function getFileUrl(path) {
     if (!path) {
         return ''
@@ -72,7 +77,7 @@ export function searchPosts(query) {
 }
 
 export async function getPost(postId) {
-    return enrichAuthor(await request(`/posts/id/${postId}`))
+    return enrichAuthor(await request(`/posts/id/${postId}`, { optionalAuth: true }))
 }
 
 export function getUserPosts(publicId) {
@@ -80,7 +85,30 @@ export function getUserPosts(publicId) {
 }
 
 export async function getPostComments(postId) {
-    return enrichAuthors(await request(`/posts/posts/${postId}/comments`))
+    return enrichAuthors(await request(`/posts/posts/${postId}/comments`, { optionalAuth: true }))
+}
+
+export function createPost({ title, body, categories }) {
+    return request('/posts/', {
+        method: 'POST',
+        auth: true,
+        body: JSON.stringify({ title, body, categories }),
+    })
+}
+
+export function updatePost(postId, { title, body, categories }) {
+    return request(`/posts/${postId}`, {
+        method: 'PATCH',
+        auth: true,
+        body: JSON.stringify({ title, body, categories }),
+    })
+}
+
+export function deletePost(postId) {
+    return request(`/posts/${postId}`, {
+        method: 'DELETE',
+        auth: true,
+    })
 }
 
 export function createComment(postId, body) {
@@ -88,6 +116,21 @@ export function createComment(postId, body) {
         method: 'POST',
         auth: true,
         body: JSON.stringify({ body }),
+    })
+}
+
+export function updateComment(commentId, body) {
+    return request(`/posts/comments/${commentId}`, {
+        method: 'PATCH',
+        auth: true,
+        body: JSON.stringify({ body }),
+    })
+}
+
+export function deleteComment(commentId) {
+    return request(`/posts/comments/${commentId}`, {
+        method: 'DELETE',
+        auth: true,
     })
 }
 
@@ -113,6 +156,38 @@ export function getProfile(publicId) {
 
 export function searchProfiles(query) {
     return request(`/profiles/search?q=${encodeURIComponent(query)}`)
+}
+
+export function getCurrentUser() {
+    return request('/auth/me', { auth: true })
+}
+
+export async function getCurrentUserProfile() {
+    const user = await getCurrentUser()
+    const profiles = await searchProfiles(user.username)
+    const profile = profiles.find((item) => item.username === user.username)
+        ?? profiles.find((item) => item.username.toLowerCase() === user.username.toLowerCase())
+        ?? null
+
+    return profile ? { ...profile, user } : null
+}
+
+export function updateProfile(publicId, { username, bio, newPublicId, avatar }) {
+    const body = new FormData()
+
+    body.set('username', username)
+    body.set('bio', bio)
+    body.set('new_public_id', newPublicId)
+
+    if (avatar) {
+        body.set('avatar', avatar)
+    }
+
+    return request(`/profiles/user/${publicId}/edit`, {
+        method: 'PATCH',
+        auth: true,
+        body,
+    })
 }
 
 export function loginUser(login, password) {

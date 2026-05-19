@@ -6,7 +6,12 @@ import PostCard from '../../components/PostCard/PostCard'
 import userImage from '../../assets/icons/user-big.svg'
 import editIcon from '../../assets/icons/edit.svg'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getFileUrl, getProfile, getUserPostsWithCommentCounts } from '../../api/client'
+import {
+    getCurrentUserProfile,
+    getFileUrl,
+    getProfile,
+    getUserPostsWithCommentCounts,
+} from '../../api/client'
 import { formatDateTime } from '../../utils/format'
 
 function ProfilePage() {
@@ -14,11 +19,13 @@ function ProfilePage() {
     const navigate = useNavigate()
     const [profile, setProfile] = useState(null)
     const [posts, setPosts] = useState([])
+    const [currentProfile, setCurrentProfile] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState('')
+    const isOwnProfile = Boolean(profile?.public_id && currentProfile?.public_id === profile.public_id)
 
     const handleClick = () => {
-        navigate('/profile/edit')
+        navigate(`/profile/${profile.public_id}/edit`)
     }
 
     useEffect(() => {
@@ -32,14 +39,16 @@ function ProfilePage() {
             }
 
             try {
-                const [loadedProfile, loadedPosts] = await Promise.all([
+                const [loadedProfile, loadedPosts, loadedCurrentProfile] = await Promise.all([
                     getProfile(publicId),
                     getUserPostsWithCommentCounts(publicId),
+                    getCurrentUserProfile().catch(() => null),
                 ])
 
                 if (isMounted) {
                     setProfile(loadedProfile)
                     setPosts(loadedPosts)
+                    setCurrentProfile(loadedCurrentProfile)
                     setError('')
                 }
             } catch (err) {
@@ -98,9 +107,11 @@ function ProfilePage() {
                             <div className="username-box">
 
                                 {profile.username}
-                                <button onClick={handleClick} type="button">
-                                    <img src={editIcon} alt=""/>
-                                </button>
+                                {isOwnProfile && (
+                                    <button onClick={handleClick} type="button">
+                                        <img src={editIcon} alt=""/>
+                                    </button>
+                                )}
 
                             </div>
 

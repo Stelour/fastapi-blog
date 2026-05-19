@@ -72,8 +72,16 @@ class Post(Base):
     )
 
     author: Mapped["User"] = relationship()
-    comments: Mapped[list["Comment"]] = relationship(back_populates="post")
-    reactions: Mapped[list["PostReaction"]] = relationship(back_populates="post")
+    comments: Mapped[list["Comment"]] = relationship(
+        back_populates="post",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    reactions: Mapped[list["PostReaction"]] = relationship(
+        back_populates="post",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Comment(Base):
@@ -100,7 +108,11 @@ class Comment(Base):
 
     author: Mapped["User"] = relationship()
     post: Mapped["Post"] = relationship(back_populates="comments")
-    reactions: Mapped[list["CommentReaction"]] = relationship(back_populates="comment")
+    reactions: Mapped[list["CommentReaction"]] = relationship(
+        back_populates="comment",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class PostReaction(Base):

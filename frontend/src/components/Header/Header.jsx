@@ -1,14 +1,36 @@
-import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import './Header.css'
 import searchIcon from '../../assets/icons/search.svg'
 import plusIcon from '../../assets/icons/plus.svg'
 import userIcon from '../../assets/icons/user.svg'
+import { getCurrentUserProfile, getFileUrl, logoutUser } from '../../api/client'
 
 function Header() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '')
+    const [currentProfile, setCurrentProfile] = useState(null)
+
+    useEffect(() => {
+        let isMounted = true
+
+        getCurrentUserProfile()
+            .then((profile) => {
+                if (isMounted) {
+                    setCurrentProfile(profile)
+                }
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setCurrentProfile(null)
+                }
+            })
+
+        return () => {
+            isMounted = false
+        }
+    }, [])
 
     const handleSearchSubmit = (event) => {
         event.preventDefault()
@@ -17,12 +39,28 @@ function Header() {
         navigate(query ? `/?q=${encodeURIComponent(query)}` : '/')
     }
 
+    const handleAvatarClick = () => {
+        if (currentProfile?.public_id) {
+            navigate(`/profile/${currentProfile.public_id}`)
+        } else {
+            navigate('/login')
+        }
+    }
+
+    const handleLogout = () => {
+        logoutUser()
+        setCurrentProfile(null)
+        navigate('/login')
+    }
+
+    const avatarSrc = currentProfile?.avatar_path ? getFileUrl(currentProfile.avatar_path) : userIcon
+
     return (
         <header className="header">
 
-            <h1 className="logo">
+            <Link className="logo" to="/">
                 BLOG
-            </h1>
+            </Link>
 
             <form className="search" onSubmit={handleSearchSubmit}>
 
@@ -43,19 +81,32 @@ function Header() {
 
             <div className="header-right">
 
-                <button className="header-btn">
+                <button className="header-btn" type="button" onClick={() => navigate('/profiles/search')}>
                     <img src={searchIcon} alt=""/>
                     PROFILES
                 </button>
 
-                <button className="header-btn">
+                <button className="header-btn" type="button" onClick={() => navigate('/posts/create')}>
                     <img src={plusIcon} alt=""/>
                     CREATE
                 </button>
 
-                <div className="avatar">
-                    <img src={userIcon} alt=""/>
-                </div>
+                {currentProfile && (
+                    <button className="header-btn logout-btn" type="button" onClick={handleLogout}>
+                        LOGOUT
+                    </button>
+                )}
+
+                <button className="avatar" type="button" onClick={handleAvatarClick}>
+                    <img
+                        src={avatarSrc}
+                        alt=""
+                        onError={(event) => {
+                            event.currentTarget.onerror = null
+                            event.currentTarget.src = userIcon
+                        }}
+                    />
+                </button>
 
             </div>
 

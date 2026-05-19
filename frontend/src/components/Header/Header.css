@@ -1,5 +1,7 @@
 .header {
     width: 100%;
+    position: relative;
+    z-index: 1;
 
     padding:
             30px
@@ -13,6 +15,7 @@
 .logo {
     color: white;
     margin-right: 80px;
+    text-decoration: none;
 
     font-family: Roboto, sans-serif;
     font-size: 50px;
@@ -123,7 +126,18 @@
     }
 }
 
+.logout-btn {
+    color: #ff9fb2;
+}
+
+.logout-btn:hover {
+    color: #ffc0cb;
+}
+
 .avatar {
+    border: none;
+    cursor: pointer;
+
     img {
         width: 60px;
         height: 60px;

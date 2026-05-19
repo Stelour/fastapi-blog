@@ -3,7 +3,7 @@ from sqlalchemy import select, case, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from backend.auth.routes import get_current_user
+from backend.auth.routes import get_current_user, get_optional_current_user
 from backend.db import get_db
 from backend.models import User, Profile, Post, PostReaction, Comment, CommentReaction
 from backend.search import query_index, add_to_index, remove_from_index
@@ -36,7 +36,12 @@ def f_reaction_counts():
         .subquery()
     )
 
-def resp_return(post: Post, likes_count: int | None, dislikes_count: int | None) -> PostResponse:
+def resp_return(
+    post: Post,
+    likes_count: int | None,
+    dislikes_count: int | None,
+    my_reaction: int | None = None,
+) -> PostResponse:
     return PostResponse(
         id=post.id,
         title=post.title,
@@ -47,6 +52,7 @@ def resp_return(post: Post, likes_count: int | None, dislikes_count: int | None)
         author_username=post.author.username,
         likes_count=likes_count or 0,
         dislikes_count=dislikes_count or 0,
+        my_reaction=my_reaction,
     )
 
 
@@ -92,7 +98,11 @@ async def get_posts(db: AsyncSession = Depends(get_db)):
     ]
 
 @router.get("/id/{post_id}", response_model=PostResponse)
-async def get_post(post_id: int, db: AsyncSession = Depends(get_db)):
+async def get_post(
+    post_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+):
     reaction_counts = f_reaction_counts()
 
     query = (
@@ -109,7 +119,18 @@ async def get_post(post_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Post not found")
 
     post, likes_count, dislikes_count = row
-    return resp_return(post, likes_count, dislikes_count)
+    my_reaction = None
+
+    if current_user is not None:
+        reaction_result = await db.execute(
+            select(PostReaction.value).where(
+                PostReaction.post_id == post_id,
+                PostReaction.user_id == current_user.id,
+            )
+        )
+        my_reaction = reaction_result.scalar_one_or_none()
+
+    return resp_return(post, likes_count, dislikes_count, my_reaction)
 
 @router.post("/", response_model=PostResponsePP, status_code=201)
 async def create_post(
@@ -268,6 +289,7 @@ async def create_comment(
 async def get_post_comments(
     post_id: int,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
     query = select(Post).where(Post.id == post_id)
     result = await db.execute(query)
@@ -290,6 +312,17 @@ async def get_post_comments(
         .order_by(Comment.timestamp.asc())
     )
     comments = result.all()
+    my_reactions = {}
+
+    if current_user is not None and comments:
+        comment_ids = [comment.id for comment, _, _ in comments]
+        reaction_result = await db.execute(
+            select(CommentReaction.comment_id, CommentReaction.value).where(
+                CommentReaction.comment_id.in_(comment_ids),
+                CommentReaction.user_id == current_user.id,
+            )
+        )
+        my_reactions = dict(reaction_result.all())
 
     return [
         CommentResponse(
@@ -300,7 +333,8 @@ async def get_post_comments(
             author_id=comment.author.id,
             author_username=comment.author.username,
             likes_count=likes_count or 0,
-            dislikes_count=dislikes_count or 0
+            dislikes_count=dislikes_count or 0,
+            my_reaction=my_reactions.get(comment.id),
         )
         for comment, likes_count, dislikes_count in comments
     ]

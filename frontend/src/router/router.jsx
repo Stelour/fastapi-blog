@@ -8,6 +8,9 @@ import HomePage from '../pages/HomePage/HomePage'
 import ProfilePage from '../pages/ProfilePage/ProfilePage'
 import EditProfilePage from '../pages/EditProfilePage/EditProfilePage'
 import PostPage from '../pages/PostPage/PostPage'
+import SearchProfilesPage from '../pages/SearchProfilesPage/SearchProfilesPage'
+import CreatePostPage from '../pages/CreatePostPage/CreatePostPage'
+import EditPostPage from '../pages/EditPostPage/EditPostPage'
 
 export const router = createBrowserRouter([
     {
@@ -41,6 +44,21 @@ export const router = createBrowserRouter([
     },
 
     {
+        path: '/profile/:publicId/edit',
+        element: <EditProfilePage />
+    },
+
+    {
+        path: '/profiles/search',
+        element: <SearchProfilesPage />
+    },
+
+    {
+        path: '/posts/create',
+        element: <CreatePostPage />
+    },
+
+    {
         path: '/post',
         element: <PostPage />
     },
@@ -48,5 +66,10 @@ export const router = createBrowserRouter([
     {
         path: '/post/:postId',
         element: <PostPage />
+    },
+
+    {
+        path: '/post/:postId/edit',
+        element: <EditPostPage />
     }
 ])

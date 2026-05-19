@@ -27,6 +27,13 @@
 .edit-profile-image {
     width: 225px;
     height: 225px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.edit-avatar-picker input {
+    display: none;
 }
 
 .edit-form {
@@ -50,5 +57,11 @@
             font-size: 36px;
         }
     }
+}
+
+.edit-profile-error {
+    color: #ff9fb2;
+    font-size: 18px;
+    text-align: center;
 }
 

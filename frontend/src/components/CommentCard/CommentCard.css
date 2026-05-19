@@ -113,6 +113,22 @@
     }
 }
 
+.comment-card .active-like {
+    color: #8fb2ff;
+}
+
+.comment-card .active-like img {
+    filter: invert(68%) sepia(37%) saturate(576%) hue-rotate(190deg) brightness(99%) contrast(89%);
+}
+
+.comment-card .active-dislike {
+    color: #ff9fb2;
+}
+
+.comment-card .active-dislike img {
+    filter: invert(66%) sepia(73%) saturate(389%) hue-rotate(304deg) brightness(101%) contrast(87%);
+}
+
 .comment-top-group {
     display: flex;
     justify-content: space-between;
@@ -124,4 +140,74 @@
     color: #9EBDFF;
     font-size: 20px;
     font-weight: 900;
+    cursor: pointer;
+}
+
+.comment-card .owner-actions {
+    position: relative;
+}
+
+.comment-card .owner-menu {
+    position: absolute;
+    right: 0;
+    top: 28px;
+    display: none;
+    min-width: 110px;
+    padding: 6px;
+    border: 1px solid rgba(176, 91, 250, 0.45);
+    border-radius: 8px;
+    background: rgba(16, 13, 24, 0.96);
+    z-index: 2;
+}
+
+.comment-card .owner-actions:hover .owner-menu,
+.comment-card .owner-actions:focus-within .owner-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-card .owner-menu button {
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.comment-card .owner-menu button:hover {
+    color: #d8aefb;
+}
+
+.comment-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comment-edit-form textarea {
+    min-height: 90px;
+    padding: 10px;
+    border: 1px solid rgba(176, 91, 250, 0.75);
+    border-radius: 8px;
+    outline: none;
+    resize: vertical;
+    background: rgba(144, 129, 208, 0.18);
+    color: white;
+    font-size: 18px;
+}
+
+.comment-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.comment-edit-actions button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(219, 181, 248, 60%);
+    color: white;
+    cursor: pointer;
 }
